@@ -1,174 +1,674 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eba's Canvas! | Eba's Canvas</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Eba's Canvas | Segni Eba</title>
 
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 
-<style>
-  /* RESET */
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: 'Montserrat', sans-serif; color: #111; background:#fff; scroll-behavior: smooth; line-height:1.6; }
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-  a { text-decoration:none; color:inherit; }
+    :root {
+      --bg:        #0c0b09;
+      --surface:   #141210;
+      --border:    #252017;
+      --terra:     #d95f2b;
+      --terra-dim: #7a3615;
+      --sand:      #e8d5b0;
+      --muted:     #6b5f4e;
+      --white:     #f5ede0;
+      --ff-display:'Bebas Neue', sans-serif;
+      --ff-serif:  'Lora', Georgia, serif;
+      --ff-body:   'DM Sans', sans-serif;
+    }
 
-  /* NAVBAR */
-  nav {
-    position: sticky; top:0;
-    background: rgba(255,255,255,0.95);
-    display:flex; justify-content:flex-end; gap:30px;
-    padding:20px 10%; z-index:1000;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    transition: background 0.3s;
-  }
-  nav a { font-weight:600; transition: color 0.3s; }
-  nav a:hover { color: #ff4c00; }
+    html { scroll-behavior: smooth; }
 
-  /* HERO */
-  .hero {
-    height:100vh; display:flex; justify-content:center; align-items:center; text-align:center;
-    background:url('images/hero.jpg') center/cover no-repeat; position:relative;
-  }
-  .hero::after {
-    content:''; position:absolute; inset:0;
-    background: rgba(0,0,0,0.4);
-  }
-  .hero-content {
-    position:relative; z-index:1; color:#fff;
-    max-width:800px; padding:20px;
-    animation: fadeInUp 1s forwards 0.3s;
-  }
-  .hero-content h1 { font-size:4rem; margin-bottom:20px; }
-  .hero-content p { font-size:1.2rem; margin-bottom:30px; }
-  .hero-content .cta { padding:12px 30px; background:#ff4c00; color:#fff; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition: 0.3s; }
-  .hero-content .cta:hover { background:#e04300; }
+    body {
+      background: var(--bg);
+      color: var(--sand);
+      font-family: var(--ff-body);
+      font-size: 17px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
 
-  @keyframes fadeInUp { from {opacity:0; transform:translateY(50px);} to {opacity:1; transform:translateY(0);} }
+    /* Grain */
+    body::after {
+      content:'';
+      position: fixed; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.55;
+    }
 
-  /* SECTIONS */
-  section { padding:80px 10%; opacity:0; transform:translateY(50px); transition: all 0.8s ease-out; }
-  section.visible { opacity:1; transform:translateY(0); }
+    a { text-decoration: none; color: inherit; }
 
-  h2 { font-size:2.5rem; margin-bottom:20px; font-weight:700; }
+    /* ── NAV ── */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index: 500;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.4rem 5%;
+      background: linear-gradient(to bottom, rgba(12,11,9,0.98) 0%, transparent 100%);
+    }
 
-  /* ABOUT */
-  #about p { max-width:700px; font-size:1.1rem; color:#333; }
+    .nav-logo {
+      font-family: var(--ff-display);
+      font-size: 1.4rem;
+      letter-spacing: 0.12em;
+      color: var(--terra);
+    }
 
-  /* GALLERY GRID */
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:25px; }
-  .grid-item { position:relative; cursor:pointer; overflow:hidden; border-radius:12px; }
-  .grid-item img { width:100%; height:auto; transition: transform 0.4s, filter 0.4s; }
-  .grid-item:hover img { transform: scale(1.05); filter: brightness(1.1); }
-  .grid-item span { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:#fff; padding:10px; font-size:1rem; opacity:0; transition: opacity 0.3s; }
-  .grid-item:hover span { opacity:1; }
+    .nav-links {
+      display: flex; gap: 2.2rem; list-style: none;
+    }
 
-  /* LIGHTBOX */
-  .lightbox { position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.95); display:flex; justify-content:center; align-items:center; display:none; z-index:1000; }
-  .lightbox img { max-width:90%; max-height:90%; border-radius:10px; }
+    .nav-links a {
+      font-family: var(--ff-body);
+      font-size: 0.72rem;
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.25s;
+      position: relative;
+    }
 
-  /* CONTACT */
-  #contact p { font-size:1.1rem; }
+    .nav-links a::after {
+      content:'';
+      position: absolute; bottom:-3px; left:0;
+      width:0; height:1px;
+      background: var(--terra);
+      transition: width 0.3s ease;
+    }
 
-  /* FOOTER */
-  footer { text-align:center; padding:40px 10%; background:#111; color:#fff; font-size:0.95rem; }
+    .nav-links a:hover { color: var(--terra); }
+    .nav-links a:hover::after { width: 100%; }
 
-  /* RESPONSIVE */
-  @media(max-width:768px){
-    .hero-content h1 { font-size:3rem; }
-    h2 { font-size:2rem; }
-    .hero-content p { font-size:1rem; }
-  }
-</style>
+    /* ── HERO ── */
+    .hero {
+      height: 100vh;
+      position: relative;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('images/hero.jpg') center/cover no-repeat;
+      transform: scale(1.05);
+      transition: transform 8s ease;
+    }
+
+    .hero:hover .hero-bg { transform: scale(1.08); }
+
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(12,11,9,1) 0%,
+        rgba(12,11,9,0.55) 45%,
+        rgba(12,11,9,0.1) 100%
+      );
+    }
+
+    .hero-content {
+      position: relative; z-index: 1;
+      padding: 0 5% 5rem;
+      max-width: 900px;
+    }
+
+    .hero-tag {
+      font-size: 0.68rem;
+      font-weight: 300;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--terra);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: slideUp 0.7s 0.3s ease forwards;
+    }
+
+    .hero-title {
+      font-family: var(--ff-display);
+      font-size: clamp(4rem, 11vw, 10rem);
+      line-height: 0.92;
+      color: var(--white);
+      letter-spacing: 0.02em;
+      opacity: 0;
+      animation: slideUp 0.8s 0.45s ease forwards;
+    }
+
+    .hero-title span { color: var(--terra); }
+
+    .hero-sub {
+      margin-top: 1.5rem;
+      font-family: var(--ff-serif);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 50ch;
+      opacity: 0;
+      animation: slideUp 0.7s 0.6s ease forwards;
+    }
+
+    .hero-cta {
+      display: inline-block;
+      margin-top: 2.2rem;
+      padding: 0.75rem 2rem;
+      border: 1px solid var(--terra-dim);
+      color: var(--white);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 300;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+      opacity: 0;
+      animation: slideUp 0.7s 0.75s ease forwards;
+    }
+
+    .hero-cta:hover {
+      background: var(--terra);
+      border-color: var(--terra);
+      color: #fff;
+    }
+
+    @keyframes slideUp {
+      from { opacity:0; transform: translateY(30px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 7rem 5%;
+    }
+
+    .section-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--terra);
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--ff-display);
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      color: var(--white);
+      letter-spacing: 0.04em;
+      line-height: 1;
+      margin-bottom: 2.5rem;
+    }
+
+    /* reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── ABOUT ── */
+    #about {
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about-text p {
+      font-family: var(--ff-serif);
+      font-size: 1.1rem;
+      color: var(--sand);
+      line-height: 1.85;
+      font-weight: 400;
+    }
+
+    .about-text p + p { margin-top: 1.2rem; }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      background: var(--border);
+    }
+
+    .stat-box {
+      background: var(--surface);
+      padding: 2rem;
+    }
+
+    .stat-number {
+      font-family: var(--ff-display);
+      font-size: 3.5rem;
+      color: var(--terra);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+
+    /* ── GALLERY ── */
+    #gallery {
+      border-top: 1px solid var(--border);
+      padding-bottom: 5rem;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-auto-rows: 80px;
+      gap: 3px;
+    }
+
+    /* Varied layout for drama */
+    .g-item:nth-child(1) { grid-column: span 5; grid-row: span 6; }
+    .g-item:nth-child(2) { grid-column: span 4; grid-row: span 4; }
+    .g-item:nth-child(3) { grid-column: span 3; grid-row: span 4; }
+    .g-item:nth-child(4) { grid-column: span 7; grid-row: span 5; }
+    .g-item:nth-child(5) { grid-column: span 5; grid-row: span 5; }
+
+    .g-item {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      background: var(--surface);
+    }
+
+    .g-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease, filter 0.4s ease;
+      filter: saturate(0.85);
+    }
+
+    .g-item:hover img {
+      transform: scale(1.07);
+      filter: saturate(1.1);
+    }
+
+    .g-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(12,11,9,0.85) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      display: flex; align-items: flex-end;
+      padding: 1.2rem;
+    }
+
+    .g-item:hover .g-overlay { opacity: 1; }
+
+    .g-label {
+      font-family: var(--ff-display);
+      font-size: 1.4rem;
+      color: var(--white);
+      letter-spacing: 0.06em;
+    }
+
+    .g-zoom {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 2rem; height: 2rem;
+      background: rgba(12,11,9,0.7);
+      border: 1px solid var(--terra-dim);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; color: var(--terra);
+      opacity: 0; transition: opacity 0.3s;
+    }
+
+    .g-item:hover .g-zoom { opacity: 1; }
+
+    /* ── CONTACT ── */
+    #contact {
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.4rem 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 300;
+      transition: color 0.25s, padding-left 0.3s;
+    }
+
+    .contact-link:first-of-type { border-top: 1px solid var(--border); }
+
+    .contact-link:hover { color: var(--terra); padding-left: 0.8rem; }
+
+    .contact-link .contact-icon {
+      font-size: 1.1rem; width: 1.5rem; text-align: center; flex-shrink: 0;
+    }
+
+    .contact-value {
+      font-family: var(--ff-serif);
+      font-size: 1rem;
+      color: var(--white);
+      font-style: italic;
+      letter-spacing: 0;
+      text-transform: none;
+      font-weight: 400;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer .f-logo {
+      font-family: var(--ff-display);
+      font-size: 1.1rem;
+      letter-spacing: 0.12em;
+      color: var(--terra-dim);
+    }
+
+    footer .f-copy {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ── LIGHTBOX ── */
+    .lightbox {
+      position: fixed; inset: 0;
+      background: rgba(8,7,6,0.97);
+      z-index: 9000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .lightbox.open { display: flex; }
+
+    .lightbox img {
+      max-width: min(90vw, 960px);
+      max-height: 88vh;
+      object-fit: contain;
+      border: 1px solid var(--border);
+      animation: lbFadeIn 0.3s ease;
+    }
+
+    @keyframes lbFadeIn {
+      from { opacity:0; transform: scale(0.96); }
+      to   { opacity:1; transform: scale(1); }
+    }
+
+    .lb-close {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      width: 2.5rem; height: 2.5rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .lb-close:hover { color: var(--terra); border-color: var(--terra); }
+
+    .lb-nav {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      width: 2.8rem; height: 2.8rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      transition: color 0.2s, border-color 0.2s;
+      background: rgba(12,11,9,0.7);
+    }
+
+    .lb-nav:hover { color: var(--terra); border-color: var(--terra); }
+    .lb-prev { left: 1.5rem; }
+    .lb-next { right: 1.5rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      #about { grid-template-columns: 1fr; gap: 3rem; }
+      #contact { grid-template-columns: 1fr; gap: 2.5rem; }
+
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: auto;
+      }
+
+      .g-item:nth-child(n) {
+        grid-column: span 1;
+        grid-row: span 1;
+        aspect-ratio: 1;
+      }
+
+      .g-item:nth-child(1) { grid-column: span 2; aspect-ratio: 16/9; }
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 1.2rem; }
+      .nav-logo { font-size: 1.1rem; }
+      .hero-content { padding: 0 1.2rem 3.5rem; }
+      section { padding: 4rem 1.2rem; }
+      footer { flex-direction: column; gap: 0.8rem; text-align: center; }
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- NAVBAR -->
+<!-- NAV -->
 <nav>
-  <a href="#about">About</a>
-  <a href="#gallery">Gallery</a>
-  <a href="#contact">Contact</a>
+  <span class="nav-logo">Eba's Canvas</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
   <div class="hero-content">
-    <h1> Welcome to Eba's Canvas🎨</h1>
-    <p>Art captures real world issues, concepts, and beliefs and visualizes it in a creative style telling unique and different stories.</p>
-    <button class="cta" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">View Gallery</button>
+    <p class="hero-tag">Visual Artist &nbsp;·&nbsp; Painter &nbsp;·&nbsp; Photographer</p>
+    <h1 class="hero-title">Eba's<br><span>Canvas</span></h1>
+    <p class="hero-sub">Art captures real world issues, concepts, and beliefs — and visualizes them in a creative style telling unique and different stories.</p>
+    <a href="#gallery" class="hero-cta">View Gallery</a>
   </div>
 </section>
 
 <!-- ABOUT -->
 <section id="about">
-  <h2>About</h2>
-  <p>Segni Eba is a self taught visual artist. He creates realistcs, abstract, and expressionist art influenced by politics, history, and African culture specifically Ethiopian culture. He also has a passion of chasing colors in his day to day life where he capture images with vibrant colors.</p>
+  <div class="about-text reveal">
+    <p class="section-label">About the Artist</p>
+    <h2 class="section-title">Segni<br>Eba</h2>
+    <p>Segni Eba is a self-taught visual artist working across realism, abstraction, and expressionism. His practice is deeply influenced by politics, history, and African culture — specifically Ethiopian heritage.</p>
+    <p>Alongside painting, Segni has a passion for chasing colors in daily life, capturing images of striking vibrancy through photography.</p>
+  </div>
+  <div class="about-stats reveal">
+    <div class="stat-box">
+      <div class="stat-number">5+</div>
+      <div class="stat-label">Works Exhibited</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">3</div>
+      <div class="stat-label">Disciplines</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">ET</div>
+      <div class="stat-label">Ethiopian Heritage</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">∞</div>
+      <div class="stat-label">Stories to Tell</div>
+    </div>
+  </div>
 </section>
 
 <!-- GALLERY -->
 <section id="gallery">
-  <h2>Gallery</h2>
-  <div class="grid">
-    <div class="grid-item" onclick="openLightbox('images/art1.jpg')">
-      <img src="images/art1.jpg" alt="Art 1">
-      <span>Art 1</span>
+  <div class="reveal">
+    <p class="section-label">Selected Works</p>
+    <h2 class="section-title">Gallery</h2>
+  </div>
+  <div class="gallery-grid reveal">
+    <div class="g-item" onclick="openLightbox(0)">
+      <img src="images/art1.jpg" alt="Art 1" loading="lazy">
+      <div class="g-overlay"><span class="g-label">Art 1</span></div>
+      <div class="g-zoom">⤢</div>
     </div>
-    <div class="grid-item" onclick="openLightbox('images/art2.JPG')">
-      <img src="images/art2.JPG" alt="Art 2">
-      <span>Art 2</span>
+    <div class="g-item" onclick="openLightbox(1)">
+      <img src="images/art2.JPG" alt="Art 2" loading="lazy">
+      <div class="g-overlay"><span class="g-label">Art 2</span></div>
+      <div class="g-zoom">⤢</div>
     </div>
-    <div class="grid-item" onclick="openLightbox('images/art3.JPG')">
-      <img src="images/art3.JPG" alt="Art 3">
-      <span>Art 3</span>
+    <div class="g-item" onclick="openLightbox(2)">
+      <img src="images/art3.JPG" alt="Art 3" loading="lazy">
+      <div class="g-overlay"><span class="g-label">Art 3</span></div>
+      <div class="g-zoom">⤢</div>
     </div>
-    <div class="grid-item" onclick="openLightbox('images/art4.JPG')">
-      <img src="images/art4.JPG" alt="Art 4">
-      <span>Art 4</span>
-    <div class="grid-item" onclick="openLightbox('images/art5.jpg')">
-      <img src="images/art5.jpg" alt="Art 4">
-      <span>Art 5</span>
+    <div class="g-item" onclick="openLightbox(3)">
+      <img src="images/art4.JPG" alt="Art 4" loading="lazy">
+      <div class="g-overlay"><span class="g-label">Art 4</span></div>
+      <div class="g-zoom">⤢</div>
+    </div>
+    <div class="g-item" onclick="openLightbox(4)">
+      <img src="images/art5.jpg" alt="Art 5" loading="lazy">
+      <div class="g-overlay"><span class="g-label">Art 5</span></div>
+      <div class="g-zoom">⤢</div>
     </div>
   </div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact">
-  <h2>Contact</h2>
-  <p>Email: ebasegni1@gmail.com</p>
+  <div class="reveal">
+    <p class="section-label">Get in Touch</p>
+    <h2 class="section-title">Contact</h2>
+    <p style="color:var(--muted); max-width:36ch; font-size:0.9rem; line-height:1.75;">Commissions, collaborations, and inquiries welcome.</p>
+  </div>
+  <div class="reveal">
+    <a href="mailto:ebasegni1@gmail.com" class="contact-link">
+      <span class="contact-icon">✉</span>
+      <span>Email</span>
+      <span class="contact-value">ebasegni1@gmail.com</span>
+    </a>
+    <a href="https://instagram.com/ebascanvas" target="_blank" rel="noopener" class="contact-link">
+      <span class="contact-icon">◎</span>
+      <span>Instagram</span>
+      <span class="contact-value">@ebascanvas</span>
+    </a>
+    <a href="https://tiktok.com/@se_gniii" target="_blank" rel="noopener" class="contact-link">
+      <span class="contact-icon">▷</span>
+      <span>TikTok</span>
+      <span class="contact-value">@se_gniii</span>
+    </a>
+  </div>
 </section>
-
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <img id="lightbox-img">
-</div>
 
 <!-- FOOTER -->
 <footer>
-  <p>© 2026 Ebas Canvas | Follow on social media Instagram: @ebascanvas Tiktok: se_gniii</p>
+  <span class="f-logo">Eba's Canvas</span>
+  <span class="f-copy">© 2026 Segni Eba — All rights reserved</span>
 </footer>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-close" onclick="closeLightbox()">✕</div>
+  <div class="lb-nav lb-prev" onclick="shiftLightbox(-1)">‹</div>
+  <img id="lightbox-img" src="" alt="">
+  <div class="lb-nav lb-next" onclick="shiftLightbox(1)">›</div>
+</div>
+
 <script>
-  // LIGHTBOX
-  function openLightbox(src){
-    document.getElementById("lightbox-img").src = src;
-    document.getElementById("lightbox").style.display = 'flex';
-  }
-  function closeLightbox(){
-    document.getElementById("lightbox").style.display = 'none';
+  // ── Gallery images for lightbox ──
+  const images = [
+    'images/art1.jpg',
+    'images/art2.JPG',
+    'images/art3.JPG',
+    'images/art4.JPG',
+    'images/art5.jpg'
+  ];
+  let currentIndex = 0;
+
+  function openLightbox(index) {
+    currentIndex = index;
+    document.getElementById('lightbox-img').src = images[currentIndex];
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
 
-  // SCROLL ANIMATION
-  const sections = document.querySelectorAll('section');
-  const observer = new IntersectionObserver(entries=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting) entry.target.classList.add('visible');
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function shiftLightbox(dir) {
+    currentIndex = (currentIndex + dir + images.length) % images.length;
+    const img = document.getElementById('lightbox-img');
+    img.style.opacity = 0;
+    setTimeout(() => {
+      img.src = images[currentIndex];
+      img.style.opacity = 1;
+    }, 150);
+  }
+
+  // Close on backdrop click
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft')  shiftLightbox(-1);
+    if (e.key === 'ArrowRight') shiftLightbox(1);
+  });
+
+  // ── Scroll reveal ──
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        entry.target.style.transitionDelay = (i * 0.1) + 's';
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
     });
-  }, {threshold:0.2});
-  sections.forEach(section => observer.observe(section));
-</script>
+  }, { threshold: 0.12 });
 
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Lightbox img transition
+  document.getElementById('lightbox-img').style.transition = 'opacity 0.15s ease';
+</script>
 </body>
 </html>
